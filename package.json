@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "tsc && node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,6 +18,11 @@
   },
   "homepage": "https://github.com/danymat/capsule-server#readme",
   "devDependencies": {
+    "@types/node": "^17.0.5",
+    "tslint": "^6.1.3",
     "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "blake3": "^2.1.7"
   }
 }
