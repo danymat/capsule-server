@@ -8,7 +8,9 @@ import {
 
 const server = new JSONRPCServer();
 
+// Act as a temporary database
 let sessions = [];
+let documents = [];
 
 server.addMethod("session/start", (params: any[]) => {
     if (params.length != 3) {
@@ -16,33 +18,46 @@ server.addMethod("session/start", (params: any[]) => {
         return;
     }
 
-    let master: User = {
-        uuid: "1",
-        username: "test",
-        ephemeralIdentity: params[2],
-        identityProof: params[3],
-    };
-
-    let document: UserDocument = {
-        filename: params[1],
-        uuid: "1",
-    };
-
-    let session: Session = {
-        uuid: "1",
-        master: master,
-        documents: [document],
-    };
+    let master: User = new User(params[2], params[3])
+    let document: UserDocument = new UserDocument(params[1])
+    let session: Session = new Session(master)
+    session.addDocument(document)
 
     sessions.push(session)
+    documents.push(document)
 
     return "success"
 
 
 });
-server.addMethod("session/join", () => {
-    return "hey";
+
+server.addMethod("session/join", (params: any[]) => {
+    if (params.length != 3) {
+        console.log("err")
+        return
+    }
+
+    const document = documents.find((d: UserDocument) => d.filename == params[1]);
+    if (!document) {
+        console.log("No document found..")
+        return
+    }
+
+    let session: Session = sessions.find((s: Session) => s.documents.find((d: UserDocument) => d.filename == document.filename))
+    if (!session) {
+        console.log("No session found for document ", document.filename)
+        return
+    }
+
+    let newUser: User = new User(params[2], params[3])
+
+    session.addUser(newUser)
+
+    return "success"
+
 });
+
+server.addMethod('test/sessions', () => sessions)
 
 const app = express();
 app.use(bodyParser.json());
