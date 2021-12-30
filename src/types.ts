@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export class UserDocument {
+class UserDocument {
     filename: string;
     uuid: string;
 
@@ -10,7 +10,7 @@ export class UserDocument {
     }
 };
 
-export class User {
+class User {
     uuid: string;
     username: string;
     ephemeralIdentity: string;
@@ -24,7 +24,7 @@ export class User {
     }
 };
 
-export class Session {
+class Session {
     uuid: string;
     master: User;
     documents: UserDocument[] = [];
@@ -50,3 +50,7 @@ export class Session {
         return res
     }
 };
+
+export { User }
+export { Session }
+export { UserDocument }

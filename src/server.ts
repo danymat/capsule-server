@@ -5,12 +5,22 @@ import {
     JSONRPCResponse,
     JSONRPCServer,
 } from "json-rpc-2.0";
+import { Server } from "socket.io";
 
-const server = new JSONRPCServer();
+const app = express();
+app.use(bodyParser.json());
+
+// Creates the websocket
+const _server = require('http').Server(app)
+const io: Server = require('socket.io')(_server)
+
 
 // Act as a temporary database
 let sessions = [];
 let documents = [];
+
+// Creates the json-rpc handling
+const server = new JSONRPCServer();
 
 server.addMethod("session/start", (params: any[]) => {
     if (params.length != 3) {
@@ -61,8 +71,6 @@ server.addMethod("session/join", (params: any[]) => {
 
 server.addMethod('test/sessions', () => sessions)
 
-const app = express();
-app.use(bodyParser.json());
 
 app.post("/json-rpc", (req: Request, res: Response) => {
     const jsonRPCRequest = req.body;
@@ -77,4 +85,10 @@ app.post("/json-rpc", (req: Request, res: Response) => {
     });
 });
 
+io.on('connection', (socket) => {
+    console.log('a user connected');
+});
+
+
 app.listen(80);
+
