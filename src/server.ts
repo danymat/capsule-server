@@ -18,8 +18,9 @@ server.addMethod("session/start", (params: any[]) => {
         return;
     }
 
-    let master: User = new User(params[2], params[3])
-    let document: UserDocument = new UserDocument(params[1])
+
+    let document: UserDocument = new UserDocument(params[0])
+    let master: User = new User(params[1], params[2])
     let session: Session = new Session(master)
     session.addDocument(document)
 
@@ -37,7 +38,7 @@ server.addMethod("session/join", (params: any[]) => {
         return
     }
 
-    const document = documents.find((d: UserDocument) => d.filename == params[1]);
+    const document = documents.find((d: UserDocument) => d.filename == params[0]);
     if (!document) {
         console.log("No document found..")
         return
@@ -49,11 +50,12 @@ server.addMethod("session/join", (params: any[]) => {
         return
     }
 
-    let newUser: User = new User(params[2], params[3])
+    let newUser: User = new User(params[1], params[2])
 
+    let userIdentities = session.getUsersIdentities()
     session.addUser(newUser)
 
-    return "success"
+    return userIdentities
 
 });
 
@@ -64,9 +66,6 @@ app.use(bodyParser.json());
 
 app.post("/json-rpc", (req: Request, res: Response) => {
     const jsonRPCRequest = req.body;
-    // server.receive takes a JSON-RPC request and returns a promise of a JSON-RPC response.
-    // It can also receive an array of requests, in which case it may return an array of responses.
-    // Alternatively, you can use server.receiveJSON, which takes JSON string as is (in this case req.body).
     server.receive(jsonRPCRequest).then((jsonRPCResponse: JSONRPCResponse) => {
         if (jsonRPCResponse) {
             res.json(jsonRPCResponse);

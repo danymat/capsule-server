@@ -1,10 +1,12 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export class UserDocument {
     filename: string;
     uuid: string;
 
     constructor(filename: string) {
         this.filename = filename
-        this.uuid = "1"
+        this.uuid = uuidv4()
     }
 };
 
@@ -17,7 +19,7 @@ export class User {
     constructor(ephemeralIdentity: string, identityProof: string) {
         this.ephemeralIdentity = ephemeralIdentity
         this.identityProof = identityProof
-        this.uuid = "1"
+        this.uuid = uuidv4()
         this.username = "test"
     }
 };
@@ -30,6 +32,8 @@ export class Session {
 
     constructor(master: User) {
         this.master = master
+        this.users.push(master)
+        this.uuid = uuidv4()
     }
 
     addDocument(d: UserDocument) {
@@ -38,5 +42,11 @@ export class Session {
 
     addUser(user: User) {
         this.users.push(user)
+    }
+
+    getUsersIdentities() {
+        let res = []
+        this.users.forEach(u => { res.push([u.ephemeralIdentity, u.identityProof]) })
+        return res
     }
 };
