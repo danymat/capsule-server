@@ -36,6 +36,8 @@ server.addMethod("session/start", (params: any[]) => {
 
     sessions.push(session)
 
+    return "success"
+
 
 });
 server.addMethod("session/join", () => {
