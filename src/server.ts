@@ -86,9 +86,15 @@ app.post("/json-rpc", (req: Request, res: Response) => {
 });
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
-});
+    console.log('a user connected', socket.id);
+    if (Object.keys(socket.data).length === 0) {
+        console.log()
+        return
+    }
+    server.receive(JSON.parse(socket.data.toString())).then((jsonRPCResponse: JSONRPCResponse) => { return socket.emit("hey", jsonRPCResponse) })
+})
 
 
-app.listen(80);
+
+_server.listen(80);
 
